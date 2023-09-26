@@ -871,6 +871,8 @@ import (
 	VariableAssignmentList	"set variable value list"
 	WhereClause		"WHERE clause"
 	WhereClauseOptional	"Optional WHERE clause"
+	JoinClause			"JOIN clause"
+	JoinCondition			"JOIN condition"
 	WithValidation		"with validation"
 	WithValidationOpt	"optional with validation"
 	Type			"Types"
@@ -3819,6 +3821,29 @@ JoinTable:
          * }
          *
 	 */
+|	TableRef JoinType "JOIN" TableRef JoinCondition
+	{
+		$$ = &ast.Join{
+			Left: $1.(ast.ResultSetNode),
+			Right: $4.(ast.ResultSetNode),
+			Tp: $2.(ast.JoinType),
+			On: $5.(*ast.OnCondition),
+		}
+	}
+
+JoinCondition:
+	JoinClause
+	{
+		$$ = &ast.OnCondition{Expr: $1.(ast.ExprNode)}
+	}
+
+
+JoinClause:
+	"ON" Expression
+	{
+		$$ = $2
+	}
+
 
 JoinType:
 	"LEFT"
@@ -3837,6 +3862,8 @@ OuterOpt:
 CrossOpt:
 	"JOIN"
 |	"INNER" "JOIN"
+| 	"CROSS" "JOIN"
+
 
 
 LimitClause:
