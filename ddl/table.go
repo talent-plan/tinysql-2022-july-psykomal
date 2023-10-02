@@ -388,7 +388,9 @@ func updateVersionAndTableInfo(t *meta.Meta, job *model.Job, tblInfo *model.Tabl
 		}
 	}
 
-	tblInfo.UpdateTS = t.StartTS
+	if tblInfo.State == model.StateNone {
+		tblInfo.UpdateTS = t.StartTS
+	}
 
 	err = t.UpdateTable(job.SchemaID, tblInfo)
 
