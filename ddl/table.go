@@ -15,6 +15,7 @@ package ddl
 
 import (
 	"fmt"
+
 	"github.com/pingcap/errors"
 	"github.com/pingcap/failpoint"
 	"github.com/pingcap/tidb/infoschema"
@@ -376,6 +377,20 @@ func updateVersionAndTableInfoWithCheck(t *meta.Meta, job *model.Job, tblInfo *m
 func updateVersionAndTableInfo(t *meta.Meta, job *model.Job, tblInfo *model.TableInfo, shouldUpdateVer bool) (
 	ver int64, err error) {
 	// TODO complete this function.
+
+	ver = int64(tblInfo.Version)
+
+	// 1. Update schema version
+	if shouldUpdateVer {
+		ver, err = updateSchemaVersion(t, job)
+		if err != nil {
+			return ver, errors.Trace(err)
+		}
+	}
+
+	tblInfo.UpdateTS = t.StartTS
+
+	err = t.UpdateTable(job.SchemaID, tblInfo)
 
 	return ver, errors.Trace(err)
 }
