@@ -162,7 +162,6 @@ func (parser *Parser) lastErrorAsWarn() {
 // The query must have one statement, otherwise ErrSyntax is returned.
 func (parser *Parser) ParseOneStmt(sql, charset, collation string) (ast.StmtNode, error) {
 	stmts, _, err := parser.Parse(sql, charset, collation)
-	fmt.Printf("%v %d", err, len(stmts))
 	if err != nil {
 		return nil, errors.Trace(err)
 	}
